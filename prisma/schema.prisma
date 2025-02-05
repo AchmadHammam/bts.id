@@ -27,39 +27,26 @@ model user {
 }
 
 model Checklist {
-  id        Int        @id @unique @default(autoincrement())
+  id        Int      @id @unique @default(autoincrement())
   userId    Int
   title     String
-  done      Boolean    @default(false)
-  createdAt DateTime   @default(now()) @map("created_at")
-  createdBy String     @map("created_by")
-  updatedAt DateTime   @default(now()) @updatedAt @map("updated_at")
-  updatedBy String     @map("updated_by")
-  Todolist  Todolist[]
-  user      user       @relation(fields: [userId], references: [id])
+  done      Boolean  @default(false)
+  createdAt DateTime @default(now()) @map("created_at")
+  createdBy String   @map("created_by")
+  updatedAt DateTime @default(now()) @updatedAt @map("updated_at")
+  updatedBy String   @map("updated_by")
+  user      user     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  items     items[]
 }
 
-model Todolist {
+model items {
   id          Int       @id @unique @default(autoincrement())
-  title       String
+  item        String
   done        Boolean   @default(false)
-  checklistId Int
+  checkListId Int
   createdAt   DateTime  @default(now()) @map("created_at")
   createdBy   String    @map("created_by")
   updatedAt   DateTime  @default(now()) @updatedAt @map("updated_at")
   updatedBy   String    @map("updated_by")
-  checklist   Checklist @relation(fields: [checklistId], references: [id])
-  items       items[]
-}
-
-model items {
-  id         Int      @id @unique @default(autoincrement())
-  item       String
-  done       Boolean  @default(false)
-  todolistId Int
-  createdAt  DateTime @default(now()) @map("created_at")
-  createdBy  String   @map("created_by")
-  updatedAt  DateTime @default(now()) @updatedAt @map("updated_at")
-  updatedBy  String   @map("updated_by")
-  todolist   Todolist @relation(fields: [todolistId], references: [id])
+  checklist   Checklist @relation(fields: [checkListId], references: [id], onDelete: Cascade)
 }

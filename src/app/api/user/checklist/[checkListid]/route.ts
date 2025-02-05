@@ -1,40 +1,117 @@
 import { authOptions } from "@/lib/auth";
 import prisma from "@/lib/database";
+import { HttpStatusCode } from "axios";
 import { getServerSession } from "next-auth";
 import { NextRequest, NextResponse } from "next/server";
 
-export async function GET(request: NextRequest, { params }: { params: { checkListid: string } }) {
+export async function PUT(request: NextRequest, { params }: { params: { checkListid: string } }) {
   const session = await getServerSession(authOptions);
   const checklistId = parseInt(params.checkListid);
 
-  var page: any = request.nextUrl.searchParams.get("page")!;
-  var pageSize: any = request.nextUrl.searchParams.get("pageSize");
-  var pageSizeInt = parseInt(pageSize);
-
-  const checklist = await prisma.todolist.findMany({
+  const check = await prisma.checklist.findFirst({
     where: {
       id: checklistId,
     },
-    select: {
-      title: true,
-      done: true,
-      createdAt: true,
-      updatedAt: true,
-      items: {
-        select: {
-          item: true,
-          createdAt: true,
-          updatedAt: true,
-        },
+  });
+  if (!check) {
+    return NextResponse.json(
+      {
+        error: true,
+        message: null,
+        data: "data tidak ditemukan",
       },
+      {
+        status: HttpStatusCode.BadRequest,
+      }
+    );
+  }
+  const done = !check.done;
+  const data = await prisma.checklist.update({
+    where: {
+      id: checklistId,
     },
-    take: pageSizeInt,
-    skip: (page - 1) * pageSize,
+    data: {
+      done: done,
+      updatedBy: session?.user.name!,
+    },
   });
 
   return NextResponse.json({
     error: false,
     message: null,
-    data: checklist,
+    data: data,
+  });
+}
+
+export async function DELETE(request: NextRequest, { params }: { params: { checkListid: string } }) {
+  const session = await getServerSession(authOptions);
+  const checklistId = parseInt(params.checkListid);
+
+  const check = await prisma.checklist.findFirst({
+    where: {
+      id: checklistId,
+    },
+  });
+  if (!check) {
+    return NextResponse.json(
+      {
+        error: true,
+        message: null,
+        data: "data tidak ditemukan",
+      },
+      {
+        status: HttpStatusCode.BadRequest,
+      }
+    );
+  }
+  const done = !check.done;
+  const data = await prisma.checklist.delete({
+    where: {
+      id: check.id,
+    },
+  });
+
+  return NextResponse.json({
+    error: false,
+    message: null,
+    data: data,
+  });
+}
+
+export async function GET(request: NextRequest, { params }: { params: { checkListid: string } }) {
+  const session = await getServerSession(authOptions);
+  const checklistId = parseInt(params.checkListid);
+
+  const check = await prisma.checklist.findFirst({
+    where: {
+      id: checklistId,
+    },
+  });
+  if (!check) {
+    return NextResponse.json(
+      {
+        error: true,
+        message: null,
+        data: "data tidak ditemukan",
+      },
+      {
+        status: HttpStatusCode.BadRequest,
+      }
+    );
+  }
+  const done = !check.done;
+  const data = await prisma.checklist.findFirst({
+    where: {
+      id: check.id,
+    },
+    include: {
+      items: true,
+    },
+  });
+
+  return NextResponse.json({
+    error: false,
+    message: null,
+    data: data,
   });
 }

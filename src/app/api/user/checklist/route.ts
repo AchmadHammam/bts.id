@@ -26,7 +26,6 @@ export async function POST(request: NextRequest) {
     );
   }
   const data = validation.data;
-  console.log(session?.user!);
 
   const checklist = await prisma.checklist.create({
     data: {
@@ -59,21 +58,20 @@ export async function GET(request: NextRequest) {
       done: true,
       createdAt: true,
       updatedAt: true,
-      Todolist: {
+      items: {
         select: {
-          title: true,
           done: true,
+          item: true,
           createdAt: true,
           updatedAt: true,
-          items: {
-            select: {
-              item: true,
-              createdAt: true,
-              updatedAt: true,
-            },
-          },
+        },
+        orderBy: {
+          updatedAt: "desc",
         },
       },
+    },
+    orderBy: {
+      updatedAt: "desc",
     },
     take: pageSizeInt,
     skip: (page - 1) * pageSize,
