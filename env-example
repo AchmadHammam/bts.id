@@ -5,3 +5,7 @@
 # See the documentation for all the connection string options: https://pris.ly/d/connection-strings
 
 DATABASE_URL="postgresql://postgres:password@localhost:5432/bts-id?schema=public"
+
+NEXTAUTH_SECRET = "TFVK9455mQtLXYG/acp3hgWDY5gMcVtc7X43yXW/FC1ZqSaw0ufUmLGnxCsf7itMEnfnVjoOwViT3fSoNNLJ0A=="
+NEXTAUTH_URL="http://localhost:3000"
+LOGIN_URL="http://localhost:3000"
