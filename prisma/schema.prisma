@@ -1,0 +1,65 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model user {
+  id        Int         @id @unique @default(autoincrement())
+  username  String
+  password  String
+  email     String
+  nama      String
+  createdAt DateTime    @default(now()) @map("created_at")
+  createdBy String      @map("created_by")
+  updatedAt DateTime    @default(now()) @updatedAt @map("updated_at")
+  updatedBy String      @map("updated_by")
+  Checklist Checklist[]
+}
+
+model Checklist {
+  id        Int        @id @unique @default(autoincrement())
+  userId    Int
+  title     String
+  done      Boolean    @default(false)
+  createdAt DateTime   @default(now()) @map("created_at")
+  createdBy String     @map("created_by")
+  updatedAt DateTime   @default(now()) @updatedAt @map("updated_at")
+  updatedBy String     @map("updated_by")
+  Todolist  Todolist[]
+  user      user       @relation(fields: [userId], references: [id])
+}
+
+model Todolist {
+  id          Int       @id @unique @default(autoincrement())
+  title       String
+  done        Boolean   @default(false)
+  checklistId Int
+  createdAt   DateTime  @default(now()) @map("created_at")
+  createdBy   String    @map("created_by")
+  updatedAt   DateTime  @default(now()) @updatedAt @map("updated_at")
+  updatedBy   String    @map("updated_by")
+  checklist   Checklist @relation(fields: [checklistId], references: [id])
+  items       items[]
+}
+
+model items {
+  id         Int      @id @unique @default(autoincrement())
+  item       String
+  done       Boolean  @default(false)
+  todolistId Int
+  createdAt  DateTime @default(now()) @map("created_at")
+  createdBy  String   @map("created_by")
+  updatedAt  DateTime @default(now()) @updatedAt @map("updated_at")
+  updatedBy  String   @map("updated_by")
+  todolist   Todolist @relation(fields: [todolistId], references: [id])
+}
