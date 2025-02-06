@@ -46,3 +46,12 @@ GET /api/user/checklist/[checklistId]/items/[itemsId] -> get detaill item
 
 
 DELETE /api/user/checklist/[checklistId]/items/[itemsId]-> hapus detail items
+
+
+
+note : auth menggunakan next-auth
+
+cara masukan token
+
+--> masukkan kedapalam cookies ada
+next-auth.session-token=[token]
